@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CanWeFixItApi</name>
+    </assembly>
+    <members>
+        <member name="M:CanWeFixItApi.Controllers.InstrumentsController.Get">
+            <summary>
+            Return all active instruments from the system
+            </summary>
+            <returns>active instruments from the system</returns>
+        </member>
+        <member name="M:CanWeFixItApi.Controllers.MarketDataController.Get">
+            <summary>
+            Return all active market data from the system
+            </summary>
+            <returns>active market data from the system</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Controllers.ValuationsController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Controllers.ValuationsController.#ctor(CanWeFixItApi.Services.IValuationsService,Microsoft.Extensions.Logging.ILogger{CanWeFixItApi.Controllers.ValuationsController})">
+            <summary>
+            
+            </summary>
+            <param name="iValuationsService"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:CanWeFixItApi.Controllers.ValuationsController.Get">
+            <summary>
+            Return market valuation
+            </summary>
+            <returns>A list of market valuation currently with only an item in the list</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Repositories.IInstrumentsRepository">
+            <summary>
+            An interface for the instrumens repository between the service and the storage of system data
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.IInstrumentsRepository.GetInstrumentsAsync">
+            <summary>
+            Return all instruments from the database that are currently `active`
+            </summary>
+            <returns>A list of all the acitve instruments</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Repositories.IMarketDataRepository">
+            <summary>
+            An interface for the market data repository between the service and the storage of system data
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.IMarketDataRepository.GetMarketDataDtoAsync">
+            <summary>
+            Return all market data from the database that are currently `active`
+            </summary>
+            <returns>A list of all the acitve market data</returns>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.InstrumentsRepository.GetInstrumentsAsync">
+            <summary>
+            Return all instruments from the database that are currently `active`
+            </summary>
+            <returns>A list of all the acitve instruments</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Repositories.IValuationsRepository">
+            <summary>
+            An interface for the market valuation repository between the service and the storage of system data
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.IValuationsRepository.GetMarketValuationAsync">
+            <summary>
+            Return the sum of of all currently `active` `MarketData`.
+            </summary>
+            <returns>The sum of of all currently `active` `MarketData`.</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Repositories.MarketDataRepository">
+            <summary>
+            An interface for the market data repository between the service and the storage of system data
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.MarketDataRepository.#ctor(CanWeFixItService.IDatabaseService,Microsoft.Extensions.Logging.ILogger{CanWeFixItApi.Repositories.MarketDataRepository})">
+            <summary>
+            
+            </summary>
+            <param name="iDatabaseService"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.MarketDataRepository.GetMarketDataDtoAsync">
+            <summary>
+            Get the market valuation in the system
+            </summary>
+            <returns>Market valuation</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Repositories.ValuationsRepository">
+            <summary>
+            An interface for the market valuation repository between the service and the storage of system data
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.ValuationsRepository.#ctor(CanWeFixItService.IDatabaseService,Microsoft.Extensions.Logging.ILogger{CanWeFixItApi.Repositories.ValuationsRepository})">
+            <summary>
+            
+            </summary>
+            <param name="iDatabaseService"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.ValuationsRepository.GetMarketDataDtoAsync">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CanWeFixItApi.Repositories.ValuationsRepository.GetMarketValuationAsync">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:CanWeFixItApi.Services.IInstrumentsService">
+            <summary>
+            An interface for the intruments service which acts as middleman between the controller and the repository with all business logic 
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Services.IInstrumentsService.GetInstrumentsAsync">
+            <summary>
+            Return all instruments from the database that are currently `active`
+            </summary>
+            <returns>A list of all the acitve instruments</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Services.IMarketDataService">
+            <summary>
+            An interface for the market data service which acts as middleman between the controller and the repository with all business logic 
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Services.IMarketDataService.GetMarketDataDtoAsync">
+            <summary>
+            Return all market data from the database that are currently `active`
+            </summary>
+            <returns>A list of all the acitve narket data</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Services.IValuationsService">
+            <summary>
+            An interface for the market valuation service which acts as middleman between the controller and the repository with all business logic 
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Services.IValuationsService.GetMarketValuationAsync">
+            <summary>
+            Return market valuation from the database that are currently `active`
+            </summary>
+            <returns>market valuation</returns>
+        </member>
+        <member name="T:CanWeFixItApi.Services.MarketDataService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Services.MarketDataService.#ctor(CanWeFixItApi.Repositories.IMarketDataRepository,Microsoft.Extensions.Logging.ILogger{CanWeFixItApi.Services.MarketDataService})">
+            <summary>
+            
+            </summary>
+            <param name="iMarketDataRepository"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:CanWeFixItApi.Services.MarketDataService.GetMarketDataDtoAsync">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:CanWeFixItApi.Services.ValuationsService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:CanWeFixItApi.Services.ValuationsService.#ctor(CanWeFixItApi.Repositories.IValuationsRepository,Microsoft.Extensions.Logging.ILogger{CanWeFixItApi.Services.ValuationsService})">
+            <summary>
+            
+            </summary>
+            <param name="iValuationsRepository"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:CanWeFixItApi.Services.ValuationsService.GetMarketValuationAsync">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

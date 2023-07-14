@@ -4,6 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using CanWeFixItApi.Repositories;
+using CanWeFixItApi.Services;
+using System.IO;
+using System.Reflection;
+using System;
 
 namespace CanWeFixItApi
 {
@@ -23,8 +28,18 @@ namespace CanWeFixItApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CanWeFixItApi", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+                c.EnableAnnotations();
             });
             services.AddSingleton<IDatabaseService, DatabaseService>();
+            services.AddScoped<IInstrumentsService, InstrumentsService>();
+            services.AddScoped<IInstrumentsRepository, InstrumentsRepository>();
+            services.AddScoped<IMarketDataService, MarketDataService>();
+            services.AddScoped<IMarketDataRepository, MarketDataRepository>();
+            services.AddScoped<IValuationsService, ValuationsService>();
+            services.AddScoped<IValuationsRepository, ValuationsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

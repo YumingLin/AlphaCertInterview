@@ -23,14 +23,19 @@ namespace CanWeFixItService
             _connection.Open();
         }
         
-        public IEnumerable<Instrument> Instruments()
+        public async Task<IEnumerable<Instrument>> Instruments()
         {
-            return _connection.QueryAsync<Instrument>("SQL GOES HERE");
+            return await _connection.QueryAsync<Instrument>("SELECT id, sedol, name, 'true' as active from instruments where active = 1");
         }
 
-        public async Task<IEnumerable<MarketData>> MarketData()
+        public async Task<IEnumerable<MarketDataDto>> MarketDataDto()
         {
-            return await _connection.QueryAsync<MarketData>("SELECT Id, DataValue FROM MarketData WHERE Active = 0");
+            return await _connection.QueryAsync<MarketDataDto>("SELECT m.id, m.DataValue, i.id as instrumentId, 'true' as active FROM MarketData m join instruments i on m.sedol = i.sedol WHERE m.Active = 1");
+        }
+
+        public async Task<IEnumerable<MarketValuation>> MarketValuation()
+        {
+            return await _connection.QueryAsync<MarketValuation>("SELECT 'DataValueTotal' as name, sum(datavalue) as total FROM MarketData where active = 1");
         }
 
         /// <summary>
@@ -40,14 +45,14 @@ namespace CanWeFixItService
         public void SetupDatabase()
         {
             const string createInstruments = @"
-                CREATE TABLE instrument
+                CREATE TABLE instruments
                 (
                     id     int,
                     sedol  text,
                     name   text,
                     active int
                 );
-                INSERT INTO instrument
+                INSERT INTO instruments
                 VALUES (1, 'Sedol1', 'Name1', 0),
                        (2, 'Sedol2', 'Name2', 1),
                        (3, 'Sedol3', 'Name3', 0),
