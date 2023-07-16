@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using CanWeFixItApi.Services;
+using System.Net;
+using System;
 
 namespace CanWeFixItApi.Controllers
 {
@@ -36,7 +38,16 @@ namespace CanWeFixItApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Instrument>>> Get()
         {   
-            return Ok(await _iValuationsService.GetMarketValuationAsync());
+            try
+            {
+                var result = await _iValuationsService.GetMarketValuationAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                //We should use middleware for exception handling and return friendly message system wide
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+            }
         }
     }
 }

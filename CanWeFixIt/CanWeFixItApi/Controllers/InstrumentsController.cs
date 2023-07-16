@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using CanWeFixItApi.Services;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Net;
+
 namespace CanWeFixItApi.Controllers
 {
     [ApiController]
@@ -26,8 +29,17 @@ namespace CanWeFixItApi.Controllers
         [SwaggerResponse(200, "A list of all active instrucments if no error")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Instrument>>> Get()
-        {   
-            return Ok(await _iInstrumentsService.GetInstrumentsAsync());
+        {
+            try
+            {
+                var result = await _iInstrumentsService.GetInstrumentsAsync();
+                return Ok(result);
+            }
+            catch(Exception  ex)
+            {
+                //We should use middleware for exception handling and return friendly message system wide
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+            }
         }
     }
 }

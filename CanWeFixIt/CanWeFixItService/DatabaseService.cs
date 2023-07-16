@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -9,42 +10,11 @@ namespace CanWeFixItService
     {
         // See SQLite In-Memory example:
         // https://github.com/dotnet/docs/blob/main/samples/snippets/standard/data/sqlite/InMemorySample/Program.cs
-        
+
         // Using a name and a shared cache allows multiple connections to access the same
         // in-memory database
         const string connectionString = "Data Source=DatabaseService;Mode=Memory;Cache=Shared";
-        private SqliteConnection _connection;
-
-        public DatabaseService()
-        {
-            // The in-memory database only persists while a connection is open to it. To manage
-            // its lifetime, keep one open connection around for as long as you need it.
-            _connection = new SqliteConnection(connectionString);
-            _connection.Open();
-        }
-        
-        public async Task<IEnumerable<Instrument>> Instruments()
-        {
-            return await _connection.QueryAsync<Instrument>("SELECT id, sedol, name, 'true' as active from instruments where active = 1");
-        }
-
-        public async Task<IEnumerable<MarketDataDto>> MarketDataDto()
-        {
-            return await _connection.QueryAsync<MarketDataDto>("SELECT m.id, m.DataValue, i.id as instrumentId, 'true' as active FROM MarketData m join instruments i on m.sedol = i.sedol WHERE m.Active = 1");
-        }
-
-        public async Task<IEnumerable<MarketValuation>> MarketValuation()
-        {
-            return await _connection.QueryAsync<MarketValuation>("SELECT 'DataValueTotal' as name, sum(datavalue) as total FROM MarketData where active = 1");
-        }
-
-        /// <summary>
-        /// This is complete and will correctly load the test data.
-        /// It is called during app startup 
-        /// </summary>
-        public void SetupDatabase()
-        {
-            const string createInstruments = @"
+        const string createInstruments = @"
                 CREATE TABLE instruments
                 (
                     id     int,
@@ -63,9 +33,7 @@ namespace CanWeFixItService
                        (8, 'Sedol8', 'Name8', 1),
                        (9, 'Sedol9', 'Name9', 0)";
 
-            _connection.Execute(createInstruments);
-            
-            const string createMarketData = @"
+        const string createMarketData = @"
                 CREATE TABLE marketdata
                 (
                     id        int,
@@ -80,8 +48,70 @@ namespace CanWeFixItService
                        (4, 4444, 'Sedol4', 1),
                        (5, 5555, 'Sedol5', 0),
                        (6, 6666, 'Sedol6', 1)";
+        
+        const string instrumentsQuery = "SELECT id, sedol, name, 'true' as active from instruments where active = 1";
+        const string marketDataQuery = "SELECT m.id, m.DataValue, i.id as instrumentId, 'true' as active FROM MarketData m join instruments i on m.sedol = i.sedol WHERE m.Active = 1";
+        const string marketValueQuery = "SELECT 'DataValueTotal' as name, sum(datavalue) as total FROM MarketData where active = 1";
 
-            _connection.Execute(createMarketData);
+
+        private SqliteConnection _connection;
+
+        protected void ensureConnectionOpen()
+        {
+            if (_connection != null) return;
+            
+            // The in-memory database only persists while a connection is open to it. To manage
+            // its lifetime, keep one open connection around for as long as you need it.
+            _connection = new SqliteConnection(connectionString);
+            _connection.Open();
+        }
+
+        protected async Task<IEnumerable<T>> runQuery<T>(string query)
+        {
+            try
+            {
+                ensureConnectionOpen();
+                return await _connection.QueryAsync<T>(query);
+            }
+            catch (Exception ex)
+            {
+                //simplified exception processing
+                throw new ApplicationException($"Exception while accessing the database: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// This is complete and will correctly load the test data.
+        /// It is called during app startup 
+        /// </summary>
+        public void SetupDatabase()
+        {
+            try
+            {
+                ensureConnectionOpen();
+                _connection.Execute(createInstruments);
+                _connection.Execute(createMarketData);
+            }
+            catch (Exception ex)
+            {
+                //simplified exception processing
+                throw new ApplicationException($"Exception while setting up the database: {ex.Message}");
+            }
+        }
+
+        public async Task<IEnumerable<Instrument>> Instruments()
+        {
+            return await runQuery<Instrument>(instrumentsQuery);
+        }
+
+        public async Task<IEnumerable<MarketDataDto>> MarketDataDto()
+        {
+            return await runQuery<MarketDataDto>(marketDataQuery);
+        }
+
+        public async Task<IEnumerable<MarketValuation>> MarketValuation()
+        {
+            return await runQuery<MarketValuation>(marketValueQuery);
         }
     }
 }
